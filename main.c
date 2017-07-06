@@ -18,6 +18,18 @@ struct node *rootFirst;
 
 
 
+struct node *balanceTreeLL(struct node *root) {
+    struct node *newRoot = root->nextL;
+    newRoot->nextR = root;
+    newRoot->nextR->nextL = newRoot->nextR->nextL->nextR;
+
+    /*newRoot->nextR->nextL->previous = newRoot->nextR;
+    newRoot->previous = newRoot->nextR->previous;
+    newRoot->nextR->previous = newRoot;*/
+    return newRoot;
+}
+
+
 int maxDepth(struct node *root) {
     if (root == NULL) {
         return 0;
@@ -34,39 +46,7 @@ int maxDepth(struct node *root) {
 }
 
 
-// Right rotation
-void rightRotation (struct node *root) {
-    struct node *c = root->nextL;
 
-    if (root->previous != NULL && root->previous->nextL == root) {
-        c = root->previous->nextL;
-    } else if (root->previous != NULL && root->previous->nextR == root) {
-        c = root->previous->nextR;
-    } else {
-        rootFirst = c;
-    }
-
-    if (c->nextR != NULL) {
-        root->nextL = c->nextL;
-    }
-
-    c->nextL = root;
-}
-
-
-// Left rotation
-void leftRotation (struct node *root) {
-    struct node *helper;
-
-    helper = root->previous;
-    root->previous = root;
-    root->nextR = helper;
-
-    if (root->nextL != NULL) {
-        helper->nextR = root->nextL;
-        helper->nextR->previous = helper;
-    }
-}
 
 // level adjustment
 void levelHandler(struct node *prev) {
@@ -80,7 +60,9 @@ void levelHandler(struct node *prev) {
             }
             prev->status = prev->nextR->level - prev->nextL->level;
         } else if (prev->nextR == NULL && prev->nextL != NULL) {
-            prev->level = prev->nextL->level + 1;
+            printf("Level %d\n", prev->value);
+            prev->level =
+                    prev->nextL->level + 1;
             prev->status = prev->nextL->level * (-1);
         } else if (prev->nextL == NULL && prev->nextR != NULL){
             prev->level = prev->nextR->level + 1;
@@ -129,18 +111,6 @@ void levelHandler(struct node *prev) {
 }
 
 
-void statusHandler (struct node *new) {
-    levelHandler(new);
-
-    // struct node *prev = new->previous;
-
-    if (new->previous != NULL) {
-
-    }
-}
-
-
-
 void insert(int value) {
     // insertion
     printf("try to add value\n");
@@ -149,6 +119,7 @@ void insert(int value) {
     newNode->value = value;
     newNode->nextL = NULL;
     newNode->nextR = NULL;
+    newNode->previous = NULL;
     if (rootFirst == NULL) {
         rootFirst = newNode;
         newNode->status = 0;
@@ -196,9 +167,9 @@ void insert(int value) {
         }
 
 
+        levelHandler(newNode->previous);
     }
 
-    levelHandler(newNode->previous);
 
 }
 
@@ -247,11 +218,15 @@ void main() {
     for (int i = 0; i < sizeof(data)/sizeof(int); i++) {
         // printf("added something\n");
         insert(data[i]);
-        printTreeInt(rootFirst, 0);
+        //printTreeInt(rootFirst, 0);
     }
+    printTreeInt(rootFirst, 0);
+    rootFirst = balanceTreeLL(rootFirst);
+    //printf("%d\n", rootFirst->value);
 
-    // balanceTree(rootFirst);
-    // printTreeInt(rootFirst, 0);
+    //printf("%d\n", rootFirst->nextR->nextR->value);
+    printTreeInt(rootFirst, 0);
+    printf("sleeping");
     sleep(10);
 }
 
