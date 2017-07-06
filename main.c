@@ -1,7 +1,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-
+#include <unistd.h>
 
 
 struct node {
@@ -68,25 +68,28 @@ void leftRotation (struct node *root) {
     }
 }
 
+// level adjustment
+void levelHandler(struct node *prev) {
 
-void statusHandler(struct node *new) {
-    if (new->previous != NULL) {
-        struct node *prev = new->previous;
-
+    if (prev->previous != NULL) {
         if (prev->nextL != NULL && prev->nextR != NULL) {
             if (prev->nextL->level > prev->nextR->level) {
                 prev->level = prev->nextL->level + 1;
             } else {
                 prev->level = prev->nextR->level + 1;
             }
-        } else if (prev->nextR == NULL) {
+        } else if (prev->nextR == NULL && prev->nextL != NULL) {
             prev->level = prev->nextL->level + 1;
-        } else {
+        } else if (prev->nextL == NULL && prev->nextR != NULL){
             prev->level = prev->nextR->level + 1;
         }
+
+        levelHandler(prev->previous);
     }
 
-    return;
+
+
+    // return;
     /* struct node *cont;
     struct node *current;
     if (new->previous != NULL) {
@@ -118,6 +121,17 @@ void statusHandler(struct node *new) {
         printf("test4\n");
     }
     printf("test5\n"); */
+}
+
+
+void statusHandler (struct node *new) {
+    levelHandler(new);
+
+    struct node *prev = new->previous;
+
+    if (new->previous != NULL) {
+
+    }
 }
 
 
@@ -179,7 +193,7 @@ void insert(int value) {
 
     }
 
-    statusHandler(newNode);
+    statusHandler(newNode->previous);
 
 }
 
@@ -206,7 +220,7 @@ void printTreeInt(struct node * root, int space){
     }
 
 
-    printf("-%d (%d)\n", root->value, root->status);
+    printf("-%d (%d | %d)\n", root->value, root->status, root->level);
 
     if(root->nextL != NULL) {
         if (root->nextL->value) {
@@ -214,7 +228,6 @@ void printTreeInt(struct node * root, int space){
 
         }
     }
-
 }
 
 
@@ -232,6 +245,7 @@ void main() {
         printTreeInt(rootFirst, 0);
     }
 
-    printTreeInt(rootFirst, 0);
+    // printTreeInt(rootFirst, 0);
+    sleep(10);
 }
 
