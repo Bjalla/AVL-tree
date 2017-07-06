@@ -71,18 +71,23 @@ void leftRotation (struct node *root) {
 // level adjustment
 void levelHandler(struct node *prev) {
 
-    if (prev->previous != NULL) {
+    if (prev != NULL) {
         if (prev->nextL != NULL && prev->nextR != NULL) {
             if (prev->nextL->level > prev->nextR->level) {
                 prev->level = prev->nextL->level + 1;
             } else {
                 prev->level = prev->nextR->level + 1;
             }
+            prev->status = prev->nextR->level - prev->nextL->level;
         } else if (prev->nextR == NULL && prev->nextL != NULL) {
             prev->level = prev->nextL->level + 1;
+            prev->status = prev->nextL->level * (-1);
         } else if (prev->nextL == NULL && prev->nextR != NULL){
             prev->level = prev->nextR->level + 1;
+            prev->status = prev->nextR->level * (-1);
         }
+
+
 
         levelHandler(prev->previous);
     }
@@ -127,7 +132,7 @@ void levelHandler(struct node *prev) {
 void statusHandler (struct node *new) {
     levelHandler(new);
 
-    struct node *prev = new->previous;
+    // struct node *prev = new->previous;
 
     if (new->previous != NULL) {
 
@@ -193,7 +198,7 @@ void insert(int value) {
 
     }
 
-    statusHandler(newNode->previous);
+    levelHandler(newNode->previous);
 
 }
 
@@ -237,14 +242,15 @@ void printTreeInt(struct node * root, int space){
 
 
 void main() {
-    int data[15] = {200,300,400,500,350,100,125,50,60,70,80,150,180,170,140};
-
-    for (int i = 0; i < 15; i++) {
+    // int data[15] = {200,300,400,500,350,100,125,50,60,70,80,150,180,170,140};
+    int data[5] = {4,2,1,5,3};
+    for (int i = 0; i < sizeof(data)/sizeof(int); i++) {
         // printf("added something\n");
         insert(data[i]);
         printTreeInt(rootFirst, 0);
     }
 
+    // balanceTree(rootFirst);
     // printTreeInt(rootFirst, 0);
     sleep(10);
 }
