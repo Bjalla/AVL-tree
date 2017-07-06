@@ -19,16 +19,37 @@ struct node *rootFirst;
 
 
 struct node *balanceTreeLL(struct node *root) {
-    struct node *newRoot = root->nextL;
-    newRoot->nextR = root;
-    newRoot->nextR->nextL = newRoot->nextR->nextL->nextR;
+    struct node *new_root = root->nextL;
+    root->nextL = new_root->nextR;
+    new_root->nextR = root;
 
-    /*newRoot->nextR->nextL->previous = newRoot->nextR;
-    newRoot->previous = newRoot->nextR->previous;
-    newRoot->nextR->previous = newRoot;*/
-    return newRoot;
+    new_root->nextR->nextL->previous = new_root->nextR;
+    new_root->previous = new_root->nextR->previous;
+    new_root->nextR->previous = new_root;
+
+    int temp;
+    temp = new_root->level;
+    new_root->level = new_root->nextR->level;
+    new_root->nextR->level = temp;
+    return new_root;
 }
 
+
+struct node *balanceTreeRR(struct node *root) {
+    struct node *new_root = root->nextR;
+    root->nextR = new_root->nextL;
+    new_root->nextL = root;
+
+    new_root->nextL->nextR->previous = new_root->nextL;
+    new_root->previous = new_root->nextL->previous;
+    new_root->nextL->previous = new_root;
+
+    int temp;
+    temp = new_root->level;
+    new_root->level = new_root->nextL->level;
+    new_root->nextL->level = temp;
+    return new_root;
+}
 
 int maxDepth(struct node *root) {
     if (root == NULL) {
@@ -195,8 +216,8 @@ void printTreeInt(struct node * root, int space){
         }
     }
 
-
-    printf("-%d (%d | %d)\n", root->value, root->status, root->level);
+    int foo = root->previous == NULL ? -1 : root->previous->value;
+    printf("-%d (%d | %d | %d)\n", root->value, root->status, root->level, foo);
 
     if(root->nextL != NULL) {
         if (root->nextL->value) {
@@ -206,26 +227,27 @@ void printTreeInt(struct node * root, int space){
     }
 }
 
-
-
-
-
-
-
 void main() {
     // int data[15] = {200,300,400,500,350,100,125,50,60,70,80,150,180,170,140};
-    int data[5] = {4,2,1,5,3};
+    //int data[5] = {4,2,1,5,3};
+    int data[5] = {2,1,4,3,5};
     for (int i = 0; i < sizeof(data)/sizeof(int); i++) {
         // printf("added something\n");
         insert(data[i]);
         //printTreeInt(rootFirst, 0);
     }
     printTreeInt(rootFirst, 0);
-    rootFirst = balanceTreeLL(rootFirst);
+    printf("\n\n\n");
+    rootFirst = balanceTreeRR(rootFirst);
     //printf("%d\n", rootFirst->value);
 
     //printf("%d\n", rootFirst->nextR->nextR->value);
     printTreeInt(rootFirst, 0);
+    printf("\n\n\n");
+
+    //rootFirst = balanceTreeRR(rootFirst);
+    //printTreeInt(rootFirst, 0);
+
     printf("sleeping");
     sleep(10);
 }
