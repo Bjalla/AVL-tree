@@ -31,6 +31,10 @@ struct node *balanceTreeLL(struct node *root) {
     temp = new_root->level;
     new_root->level = new_root->nextR->level;
     new_root->nextR->level = temp;
+
+    temp = new_root->status;
+    new_root->status = new_root->nextR->status;
+    new_root->nextR->status = temp;
     return new_root;
 }
 
@@ -48,6 +52,10 @@ struct node *balanceTreeRR(struct node *root) {
     temp = new_root->level;
     new_root->level = new_root->nextL->level;
     new_root->nextL->level = temp;
+
+    temp = new_root->status;
+    new_root->status = new_root->nextL->status;
+    new_root->nextL->status = temp;
     return new_root;
 }
 
